@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="myantProject" basedir="." default="package">
+	
+	<property name="compile" value="bin"></property>
+	<property name="dist" value="dist"></property>
+	<tstamp></tstamp>
+		
+	<target name="init">
+	</target>
+	<target name="compile" depends="init,preprocess"></target>
+	<target name="package" depends="compile"></target>
+	
+	<target name="preprocess" depends="init">
+		<mkdir dir="${compile}"/>
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${dist}/hello"/>
+	</target>
+
+	<target name="myCompile" depends="preprocess">
+		<javac srcdir="src" destdir="${compile}"></javac>
+	</target>
+	
+	<target name="dist" depends="myCompile">
+		<jar destfile="${dist}/ant-${DSTAMP}.jar" basedir="${compile}">
+			<manifest>
+				<attribute name="Build-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="com.github.ant.test.Test"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="delFile"	depends="copyFile">
+		<delete file="${dist}/build.xml"></delete>
+	</target>
+
+	<target name="copyFile">
+		<delete dir="${dist}/hello" />
+		<copy file="build.xml" todir="${dist}/"></copy>
+	</target>
+
+	<target name="moveFile" depends="copyFile">
+		<move file="${dist}/build.xml" todir="${dist}/hello"></move>
+		<move file="${dist}/hello/build.xml" tofile="${dist}/hello/bak.xml"></move>
+	</target>
+
+	<target name="compress">
+		<zip destfile="${dist}/src.zip" basedir="src"></zip>
+	</target>
+
+	<target name="uncompress" depends="compress">
+		<unzip dest="${dist}" src="${dist}/src.zip"></unzip>
+	</target>
+
+	<target name="replaceOpertation">
+		<replace file="input.txt" token="how" value="waht" summary="on"> </replace>
+	</target>
+
+	<target name="archive">
+		<mkdir dir="${dist}/archive"/>
+		<copy todir="${dist}/archive">
+			<fileset dir="src">
+				<include name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<taskdef name="myFileSorter" classname="com.github.ant.tools.extend.FileSorter" classpath="bin">
+	</taskdef>
+
+	<target name="fileSort">
+		<myFileSorter srcFile="input.txt" destFile="output.txt" />
+	</target>
+
+</project>
